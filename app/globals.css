@@ -173,8 +173,9 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
   .summary-main p { font-size: 14px; }
   .calendar-icon { width: 62px; height: 58px; border-width: 6px; border-top-width: 9px; }
   .summary-item { padding: 8px 0; }
-  .footer-inner { height: 75px; }
-  .footer-inner > p { display: none; }
+  .footer-inner { height: auto; min-height: 92px; gap: 14px; padding: 16px 0; }
+  .footer-inner > p { margin: 0; font-size: 12px; line-height: 1.7; text-align: center; }
+  .footer-inner > p a { margin-left: 8px; }
 }
 
 .legal-page { min-height: 100vh; padding: 48px 20px; background: linear-gradient(rgba(86,121,151,.08) 1px, transparent 1px), linear-gradient(90deg, rgba(86,121,151,.08) 1px, transparent 1px), #071420; background-size: 40px 40px; }
