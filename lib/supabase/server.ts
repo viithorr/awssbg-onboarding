@@ -10,7 +10,13 @@ export async function createUserClient() {
   return createServerClient(url, key, {
     cookies: {
       getAll: () => cookieStore.getAll(),
-      setAll: (values: Array<{ name: string; value: string; options: CookieOptions }>) => values.forEach(({ name, value, options }) => cookieStore.set(name, value, options)),
+      setAll: (values: Array<{ name: string; value: string; options: CookieOptions }>) => {
+        try {
+          values.forEach(({ name, value, options }) => cookieStore.set(name, value, options));
+        } catch {
+          // Server Components cannot write cookies. Server Actions still persist them.
+        }
+      },
     },
   });
 }
