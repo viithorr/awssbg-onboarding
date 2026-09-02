@@ -125,6 +125,7 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
 .footer .brand-name, .footer .uvv-badge { display: none; }
 .footer .brand-logo { width: 82px; height: auto; }
 .footer-pixel { font-size: 30px; color: #8f4bff; }
+.footer-inner > p a { margin-left: 13px; color: #c7b7ff; text-underline-offset: 3px; }
 .footer img.footer-pixel { display: block; width: 39px; height: auto; object-fit: contain; }
 
 @media (max-width: 900px) {
@@ -175,6 +176,16 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
   .footer-inner { height: 75px; }
   .footer-inner > p { display: none; }
 }
+
+.legal-page { min-height: 100vh; padding: 48px 20px; background: linear-gradient(rgba(86,121,151,.08) 1px, transparent 1px), linear-gradient(90deg, rgba(86,121,151,.08) 1px, transparent 1px), #071420; background-size: 40px 40px; }
+.legal-window { width: min(820px, 100%); margin: 0 auto; padding: clamp(24px, 5vw, 48px); border: 2px solid #304254; border-radius: 5px; background: #0d1c29; box-shadow: 8px 8px 0 #28184d; }
+.legal-window h1 { margin: 0; font-size: clamp(32px, 6vw, 52px); }
+.legal-updated { color: #8995a5; margin: 8px 0 35px; }
+.legal-window section { padding: 20px 0; border-top: 1px solid #293b4c; }
+.legal-window h2 { margin: 0 0 9px; color: #c7b7ff; font-size: 19px; }
+.legal-window section p { margin: 0; color: #b8c0cc; line-height: 1.7; }
+.legal-window a { color: #b88cff; }
+.legal-back { display: inline-block; margin-top: 25px; padding: 10px 13px; border: 2px solid #b88cff; border-radius: 3px; background: #21183b; box-shadow: 4px 4px 0 #050d14; text-decoration: none; font-weight: 700; }
 
 .admin-login { min-height: 100vh; display: grid; place-items: center; padding: 24px; background: radial-gradient(circle at 30% 20%, rgba(90,58,205,.22), transparent 34%), #071420; }
 .admin-login-card { width: min(100%, 430px); padding: 34px; border: 1px solid #29394b; border-radius: 18px; background: #0d1b28; box-shadow: 0 24px 70px rgba(0,0,0,.35); }
