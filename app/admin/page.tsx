@@ -31,6 +31,11 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
     const matchesName = !normalizedName || candidate?.name.toLocaleLowerCase("pt-BR").includes(normalizedName);
     const matchesDate = !date || (bookingSlot?.starts_at && dateKey(bookingSlot.starts_at) === date);
     return matchesName && matchesDate;
+  }).sort((first, second) => {
+    if (!date) return 0;
+    const firstSlot = firstRelation<{ starts_at: string }>(first.slots);
+    const secondSlot = firstRelation<{ starts_at: string }>(second.slots);
+    return new Date(firstSlot?.starts_at ?? 0).getTime() - new Date(secondSlot?.starts_at ?? 0).getTime();
   });
 
   return <main className="admin-shell">
