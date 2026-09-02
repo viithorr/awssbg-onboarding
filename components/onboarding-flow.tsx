@@ -16,11 +16,22 @@ export function OnboardingFlow({ candidates }: { candidates: Candidate[] }) {
   const [verificationToken, setVerificationToken] = useState("");
   const [slots, setSlots] = useState<Slot[]>([]);
   const [slot, setSlot] = useState<Slot | null>(null);
+  const [selectedDay, setSelectedDay] = useState("");
   const [success, setBookingSuccess] = useState(false);
   const [booking, setBooking] = useState(false);
   const [bookingError, setBookingError] = useState("");
 
   const filteredCandidates = useMemo(() => candidates.filter(({ name }) => name.toLocaleLowerCase("pt-BR").includes(query.trim().toLocaleLowerCase("pt-BR"))), [candidates, query]);
+  const slotsByDay = useMemo(() => {
+    const groups = new Map<string, Slot[]>();
+    for (const item of slots) {
+      const key = dayKey(item.startsAt);
+      groups.set(key, [...(groups.get(key) ?? []), item]);
+    }
+    return Array.from(groups, ([key, items]) => ({ key, items }));
+  }, [slots]);
+  const activeDay = selectedDay || slotsByDay[0]?.key || "";
+  const visibleSlots = slotsByDay.find((group) => group.key === activeDay)?.items ?? [];
 
   async function verifyEmail(event: FormEvent) {
     event.preventDefault();
@@ -35,6 +46,7 @@ export function OnboardingFlow({ candidates }: { candidates: Candidate[] }) {
       const slotsResult = await slotsResponse.json();
       if (!slotsResponse.ok) throw new Error(slotsResult.message ?? "Não foi possível carregar os horários.");
       setSlots(slotsResult.slots);
+      setSelectedDay(slotsResult.slots[0] ? dayKey(slotsResult.slots[0].startsAt) : "");
       setVerificationToken(result.token);
       setVerified(true);
     } catch (error) {
@@ -79,14 +91,14 @@ export function OnboardingFlow({ candidates }: { candidates: Candidate[] }) {
             <div className="search-field"><Search aria-hidden="true" /><input id="candidate-search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder={candidate?.name || "Escolha seu nome"} autoComplete="off" /></div>
             {query && !candidate && <ul className="candidate-options">{filteredCandidates.map((item) => <li key={item.id}><button type="button" onClick={() => { setCandidate(item); setQuery(""); }}>{item.name}</button></li>)}</ul>}
             {!query && !candidate && <button className="select-trigger" type="button" onClick={() => setQuery(" ")}>Ver candidatos</button>}
-            {candidate && <button className="change-candidate" type="button" onClick={() => { setCandidate(null); setVerified(false); setSlot(null); setSlots([]); setEmail(""); setVerificationError(""); }}>Alterar nome</button>}
+            {candidate && <button className="change-candidate" type="button" onClick={() => { setCandidate(null); setVerified(false); setSlot(null); setSlots([]); setSelectedDay(""); setEmail(""); setVerificationError(""); }}>Alterar nome</button>}
           </div>
         </Step>
 
         <Step number="2" icon={<Mail />} title="Confirme seu e-mail" state={verified ? "done" : candidate ? "active" : "locked"}>
           <form onSubmit={verifyEmail} className="email-form">
             <label className="sr-only" htmlFor="email">Digite seu e-mail</label>
-            <input id="email" type="email" value={email} onChange={(e) => { setEmail(e.target.value); setVerified(false); setSlot(null); setVerificationError(""); }} placeholder="Digite seu e-mail" disabled={!candidate} required />
+            <input id="email" type="email" value={email} onChange={(e) => { setEmail(e.target.value); setVerified(false); setSlot(null); setSelectedDay(""); setVerificationError(""); }} placeholder="Digite seu e-mail" disabled={!candidate} required />
             <button type="submit" disabled={!candidate || !email || verifying}>{verifying ? "Confirmando..." : verified ? "E-mail confirmado" : "Confirmar e-mail"}</button>
           </form>
           {verificationError && <p className="field-error" role="alert">{verificationError}</p>}
@@ -94,7 +106,22 @@ export function OnboardingFlow({ candidates }: { candidates: Candidate[] }) {
         </Step>
 
         <Step number="3" icon={<Clock3 />} title="Escolha um horário disponível" state={verified ? "active" : "locked"} last>
-          {!verified ? <div className="locked-message"><LockKeyhole /> Horários serão exibidos após confirmar seu e-mail</div> : slots.length ? <div className="slots"><p>Horários disponíveis</p><div>{slots.map((item) => { const date = new Date(item.startsAt); const label = new Intl.DateTimeFormat("pt-BR", { weekday: "short", day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit", timeZone: "America/Sao_Paulo" }).format(date); return <button className={slot?.id === item.id ? "selected" : ""} onClick={() => setSlot(item)} type="button" key={item.id}>{slot?.id === item.id && <Check />} {label}</button>; })}</div></div> : <div className="locked-message">Nenhum horário disponível no momento.</div>}
+          {!verified ? <div className="locked-message"><LockKeyhole /> Horários serão exibidos após confirmar seu e-mail</div> : slots.length ? (
+            <div className="slots">
+              <p>Horários disponíveis</p>
+              <div className="slot-days" role="tablist" aria-label="Dias disponíveis">
+                {slotsByDay.map((group) => {
+                  const date = new Date(group.items[0].startsAt);
+                  return <button className={activeDay === group.key ? "selected" : ""} onClick={() => { setSelectedDay(group.key); if (slot && dayKey(slot.startsAt) !== group.key) setSlot(null); }} type="button" role="tab" aria-selected={activeDay === group.key} key={group.key}><small>{formatWeekday(date)}</small><strong>{formatDay(date)}</strong><span>{group.items.length} horários</span></button>;
+                })}
+              </div>
+              <p className="slot-day-title">{visibleSlots[0] && formatFullDay(new Date(visibleSlots[0].startsAt))}</p>
+              <div className="slot-times" role="tabpanel">
+                {visibleSlots.map((item) => <button className={slot?.id === item.id ? "selected" : ""} onClick={() => setSlot(item)} type="button" key={item.id}>{slot?.id === item.id && <Check aria-hidden="true" />} {formatTime(new Date(item.startsAt))}</button>)}
+              </div>
+              {slot && <div className="slot-choice"><Check aria-hidden="true" /><span>Selecionado</span><strong>{formatFullDateTime(new Date(slot.startsAt))}</strong></div>}
+            </div>
+          ) : <div className="locked-message">Nenhum horário disponível no momento.</div>}
         </Step>
       </div>
 
@@ -103,7 +130,7 @@ export function OnboardingFlow({ candidates }: { candidates: Candidate[] }) {
         <p className="summary-label"><CalendarCheck /> Sua reserva</p>
         {success ? <div className="summary-main success"><span className="calendar-icon"><Check /></span><h2>Onboarding agendado!</h2><p>Sua reserva foi confirmada com sucesso.</p></div> : <div className="summary-main"><span className="calendar-icon"><Check /></span><h2>{slot ? candidate?.name : "Nenhum horário selecionado"}</h2><p>{slot ? new Intl.DateTimeFormat("pt-BR", { dateStyle: "full", timeStyle: "short", timeZone: "America/Sao_Paulo" }).format(new Date(slot.startsAt)) : "Complete os passos ao lado para visualizar e confirmar sua reserva."}</p></div>}
         <div className="summary-details">
-          <SummaryItem icon={<Clock3 />} title="Onboarding individual" text="Duração média: 25 minutos" />
+          <SummaryItem icon={<Clock3 />} title="Onboarding individual" text="Duração: 30 minutos" />
           <SummaryItem icon={<Mail />} title="Formato online" text="Link será enviado por e-mail" />
           <SummaryItem icon={<Settings />} title="Pontualidade" text="Chegue 5 minutos antes do seu horário" />
         </div>
@@ -119,4 +146,32 @@ function Step({ number, icon, title, state, last = false, children }: { number: 
 
 function SummaryItem({ icon, title, text }: { icon: React.ReactNode; title: string; text: string }) {
   return <div className="summary-item"><span>{icon}</span><p><strong>{title}</strong><small>{text}</small></p></div>;
+}
+
+const dateTimeZone = "America/Sao_Paulo";
+
+function dayKey(value: string) {
+  return new Intl.DateTimeFormat("en-CA", { timeZone: dateTimeZone, year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(value));
+}
+
+function formatWeekday(date: Date) {
+  const value = new Intl.DateTimeFormat("pt-BR", { timeZone: dateTimeZone, weekday: "short" }).format(date).replace(".", "");
+  return value.charAt(0).toUpperCase() + value.slice(1);
+}
+
+function formatDay(date: Date) {
+  return new Intl.DateTimeFormat("pt-BR", { timeZone: dateTimeZone, day: "2-digit", month: "2-digit" }).format(date);
+}
+
+function formatFullDay(date: Date) {
+  const value = new Intl.DateTimeFormat("pt-BR", { timeZone: dateTimeZone, weekday: "long", day: "2-digit", month: "long" }).format(date);
+  return value.charAt(0).toUpperCase() + value.slice(1);
+}
+
+function formatTime(date: Date) {
+  return new Intl.DateTimeFormat("pt-BR", { timeZone: dateTimeZone, hour: "2-digit", minute: "2-digit", hour12: false }).format(date);
+}
+
+function formatFullDateTime(date: Date) {
+  return `${formatFullDay(date)} às ${formatTime(date)}`;
 }

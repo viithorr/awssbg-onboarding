@@ -81,10 +81,23 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
 .locked-message { min-height: 50px; display: flex; align-items: center; gap: 12px; border: 1px solid #354354; border-radius: 8px; padding: 0 15px; color: #8d96a5; font-size: 14px; }
 .locked-message svg { width: 18px; }
 .slots > p { color: #bdb6ff; margin: 0 0 10px; font-weight: 700; }
-.slots > div { display: flex; flex-wrap: wrap; gap: 9px; }
-.slots button { min-width: 80px; height: 42px; color: #e9e8f1; border: 1px solid #3b4b5e; border-radius: 8px; background: #10202e; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 4px; }
+.slots button { color: #e9e8f1; border: 1px solid #3b4b5e; border-radius: 8px; background: #10202e; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 4px; }
 .slots button:hover, .slots button.selected { border-color: #8c58f1; background: #322160; }
 .slots svg { width: 15px; }
+.slot-days { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-bottom: 17px; }
+.slot-days button { min-width: 0; min-height: 78px; padding: 9px 8px; flex-direction: column; line-height: 1.05; }
+.slot-days small { color: #aeb6c3; font-size: 11px; font-weight: 700; text-transform: uppercase; }
+.slot-days strong { font-size: 17px; }
+.slot-days span { color: #9fa9b8; font-size: 10px; }
+.slot-days button.selected small, .slot-days button.selected span { color: #d9ccff; }
+.slots .slot-day-title { margin: 0 0 10px; color: #e6e3ef; font-size: 13px; }
+.slot-times { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 9px; }
+.slot-times button { min-width: 0; height: 43px; padding: 0 8px; font-weight: 700; }
+.slot-times button.selected { color: #fff; box-shadow: 2px 2px 0 #b88cff; }
+.slot-choice { display: grid; grid-template-columns: 22px auto 1fr; align-items: center; gap: 7px; margin-top: 15px; padding: 11px 12px; color: #d9ccff; border: 2px solid #61449b; border-radius: 3px; background: #17132b; box-shadow: 3px 3px 0 #07131e; font-size: 12px; }
+.slot-choice svg { color: #b88cff; }
+.slot-choice span { color: #9fa9b8; }
+.slot-choice strong { text-align: right; }
 .summary-card { color-scheme: light; position: sticky; top: 105px; color: #11192a; min-height: 590px; padding: 31px; border-radius: 20px; background: linear-gradient(145deg, #fff 0%, #f5f5fc 100%); box-shadow: 0 24px 65px rgba(23, 14, 64, .30), 0 0 45px rgba(102, 73, 225, .08); overflow: hidden; }
 .summary-label { display: flex; align-items: center; gap: 10px; margin: 0; text-transform: uppercase; color: #7e49e8; font-weight: 700; }
 .summary-label svg { width: 21px; }
