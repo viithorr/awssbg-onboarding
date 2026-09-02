@@ -1,0 +1,11 @@
+node_modules
+.next
+out
+.env
+.env.local
+google-oauth-client.json
+google-token.json
+client_secret_*.json
+.vercel
+*.log
+*.tsbuildinfo
