@@ -1,8 +1,7 @@
 node_modules
 .next
 out
-.env
-.env.local
+.env*
 google-oauth-client.json
 google-token.json
 client_secret_*.json

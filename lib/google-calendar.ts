@@ -6,12 +6,22 @@ import { google } from "googleapis";
 type CalendarBooking = { bookingId: string; candidateName: string; candidateEmail: string; startsAt: string; endsAt: string };
 
 async function calendarClient() {
-  const credentials = JSON.parse(await fs.readFile(path.join(process.cwd(), "google-oauth-client.json"), "utf8"));
-  const tokens = JSON.parse(await fs.readFile(path.join(process.cwd(), "google-token.json"), "utf8"));
-  const config = credentials.installed ?? credentials.web;
-  if (!config?.client_id || !config?.client_secret || !tokens?.refresh_token) throw new Error("Credenciais do Google Agenda incompletas.");
-  const oauth = new google.auth.OAuth2(config.client_id, config.client_secret);
-  oauth.setCredentials(tokens);
+  let clientId = process.env.GOOGLE_OAUTH_CLIENT_ID;
+  let clientSecret = process.env.GOOGLE_OAUTH_CLIENT_SECRET;
+  let refreshToken = process.env.GOOGLE_OAUTH_REFRESH_TOKEN;
+
+  if (!clientId || !clientSecret || !refreshToken) {
+    const credentials = JSON.parse(await fs.readFile(path.join(process.cwd(), "google-oauth-client.json"), "utf8"));
+    const tokens = JSON.parse(await fs.readFile(path.join(process.cwd(), "google-token.json"), "utf8"));
+    const config = credentials.installed ?? credentials.web;
+    clientId = config?.client_id;
+    clientSecret = config?.client_secret;
+    refreshToken = tokens?.refresh_token;
+  }
+
+  if (!clientId || !clientSecret || !refreshToken) throw new Error("Credenciais OAuth do Google Agenda incompletas.");
+  const oauth = new google.auth.OAuth2(clientId, clientSecret);
+  oauth.setCredentials({ refresh_token: refreshToken });
   return google.calendar({ version: "v3", auth: oauth });
 }
 

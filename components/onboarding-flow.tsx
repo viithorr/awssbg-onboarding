@@ -1,7 +1,7 @@
 "use client";
 
 import { FormEvent, useMemo, useState } from "react";
-import { CalendarCheck, Check, Clock3, Info, LockKeyhole, Mail, Search, Settings, UserRound } from "lucide-react";
+import { CalendarCheck, Check, Clock3, LockKeyhole, Mail, Search, Settings, UserRound } from "lucide-react";
 
 type Candidate = { id: string; name: string };
 type Slot = { id: string; startsAt: string; endsAt: string };
@@ -108,7 +108,6 @@ export function OnboardingFlow({ candidates }: { candidates: Candidate[] }) {
           <SummaryItem icon={<Settings />} title="Pontualidade" text="Chegue 5 minutos antes do seu horário" />
         </div>
         {slot && !success && <button className="confirm-booking" onClick={() => setSuccess(true)} type="button">Confirmar agendamento</button>}
-        <div className="contact-box" id="contato"><Info /><p><strong>Dúvidas? Fale com a gente!</strong><span className="contact-links"><a href="mailto:awssbg.uvv@gmail.com">E-mail</a><a href="https://wa.me/5513982283829?text=Ol%C3%A1!!%20Vim%20pelo%20site%20e%20quero%20saber%20mais%20sobre%20o%20SBG%20UVV" target="_blank" rel="noreferrer">WhatsApp</a></span></p></div>
       </aside>
     </section>
   );

@@ -3,6 +3,7 @@ import { Header } from "@/components/header";
 import { OnboardingFlow } from "@/components/onboarding-flow";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { AboutGroup } from "@/components/about-group";
+import { ContactSection } from "@/components/contact-section";
 
 export const dynamic = "force-dynamic";
 
@@ -19,6 +20,7 @@ export default async function Home() {
         </section>
         <OnboardingFlow candidates={data ?? []} />
         <AboutGroup />
+        <ContactSection />
       </main>
       <Footer />
     </div>
