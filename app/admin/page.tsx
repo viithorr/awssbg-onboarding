@@ -1,4 +1,4 @@
-import { CalendarDays, CheckCircle2, Clock3, LogOut, Plus, Trash2, UserX, Users, XCircle } from "lucide-react";
+import { CalendarDays, CheckCircle2, Clock3, LogOut, Plus, Search, Trash2, UserX, Users, XCircle } from "lucide-react";
 import { requireAdmin } from "@/lib/admin-auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { cancelBooking, createSlots, deleteSlot, logout, toggleSlot, updateBookingStatus } from "./actions";
@@ -10,9 +10,9 @@ const statusLabels: Record<string, string> = {
   cancelled: "Cancelado", completed: "Concluído", no_show: "Não compareceu",
 };
 
-export default async function AdminPage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
+export default async function AdminPage({ searchParams }: { searchParams: Promise<{ error?: string; date?: string; name?: string }> }) {
   const user = await requireAdmin();
-  const { error } = await searchParams;
+  const { error, date = "", name = "" } = await searchParams;
   const supabase = createAdminClient();
   const [{ data: slots }, { data: bookings }, { count: candidateCount }] = await Promise.all([
     supabase.from("slots").select("id,starts_at,ends_at,blocked,bookings(id,status)").order("starts_at"),
@@ -20,6 +20,18 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
     supabase.from("candidates").select("id", { head: true, count: "exact" }).eq("active", true),
   ]);
   const activeBookings = (bookings ?? []).filter((item) => item.status !== "cancelled");
+  const bookingDates = Array.from(new Set((bookings ?? []).map((booking) => {
+    const bookingSlot = firstRelation<{ starts_at: string }>(booking.slots);
+    return bookingSlot?.starts_at ? dateKey(bookingSlot.starts_at) : "";
+  }).filter(Boolean))).sort();
+  const normalizedName = name.trim().toLocaleLowerCase("pt-BR");
+  const filteredBookings = (bookings ?? []).filter((booking) => {
+    const candidate = firstRelation<{ name: string }>(booking.candidates);
+    const bookingSlot = firstRelation<{ starts_at: string }>(booking.slots);
+    const matchesName = !normalizedName || candidate?.name.toLocaleLowerCase("pt-BR").includes(normalizedName);
+    const matchesDate = !date || (bookingSlot?.starts_at && dateKey(bookingSlot.starts_at) === date);
+    return matchesName && matchesDate;
+  });
 
   return <main className="admin-shell">
     <header className="admin-header"><div><span className="uvv-badge">sbgUVV</span><strong>Painel do onboarding</strong></div><form action={logout}><button type="submit"><LogOut /> Sair</button></form></header>
@@ -43,11 +55,18 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
       </section>
       <section className="admin-panel bookings-panel">
         <div className="admin-panel-title"><div><CalendarDays /><h2>Reservas recentes</h2></div></div>
-        <div className="admin-table-wrap"><table><thead><tr><th>Candidato</th><th>Data e hora</th><th>Status</th><th>Meet</th><th>Ações</th></tr></thead><tbody>{(bookings ?? []).map((booking) => {
+        <form className="booking-filters" action="/admin" method="get">
+          <label><span>Nome do candidato</span><span className="filter-input"><Search aria-hidden="true" /><input name="name" type="search" defaultValue={name} placeholder="Buscar por nome" /></span></label>
+          <label><span>Data da reserva</span><select name="date" defaultValue={date}><option value="">Todas as datas</option>{bookingDates.map((value) => <option value={value} key={value}>{formatFilterDate(value)}</option>)}</select></label>
+          <button type="submit">Filtrar</button>
+          {(name || date) && <a href="/admin">Limpar filtros</a>}
+        </form>
+        {(name || date) && <p className="filter-result">{filteredBookings.length} {filteredBookings.length === 1 ? "reserva encontrada" : "reservas encontradas"}</p>}
+        <div className="admin-table-wrap"><table><thead><tr><th>Candidato</th><th>Data e hora</th><th>Status</th><th>Meet</th><th>Ações</th></tr></thead><tbody>{filteredBookings.map((booking) => {
           const candidate = firstRelation<{ name: string }>(booking.candidates);
           const bookingSlot = firstRelation<{ starts_at: string }>(booking.slots);
           return <tr key={booking.id}><td>{candidate?.name ?? "Candidato não encontrado"}</td><td>{bookingSlot?.starts_at ? formatDate(bookingSlot.starts_at, "short") : "—"}</td><td><span className={`status-badge status-${booking.status}`}>{statusLabels[booking.status] ?? booking.status}</span></td><td>{booking.meet_url ? <a href={booking.meet_url} target="_blank" rel="noreferrer">Abrir Meet</a> : "—"}</td><td><BookingActions id={booking.id} status={booking.status} /></td></tr>;
-        })}</tbody></table>{!bookings?.length && <p className="admin-empty">Nenhuma reserva realizada.</p>}</div>
+        })}</tbody></table>{!filteredBookings.length && <p className="admin-empty">Nenhuma reserva encontrada com esses filtros.</p>}</div>
       </section>
     </div>
   </main>;
@@ -68,5 +87,7 @@ function errorMessage(error: string) {
 }
 
 function formatDate(value: string, dateStyle: "short" | "medium") { return new Intl.DateTimeFormat("pt-BR", { dateStyle, timeStyle: "short", timeZone: "America/Sao_Paulo" }).format(new Date(value)); }
+function dateKey(value: string) { return new Intl.DateTimeFormat("en-CA", { year: "numeric", month: "2-digit", day: "2-digit", timeZone: "America/Sao_Paulo" }).format(new Date(value)); }
+function formatFilterDate(value: string) { const [year, month, day] = value.split("-").map(Number); return new Intl.DateTimeFormat("pt-BR", { weekday: "long", day: "2-digit", month: "2-digit" }).format(new Date(year, month - 1, day)); }
 function firstRelation<T>(value: T | T[] | null): T | null { return Array.isArray(value) ? value[0] ?? null : value; }
 function Stat({ icon, value, label }: { icon: React.ReactNode; value: number; label: string }) { return <div className="admin-stat"><span>{icon}</span><div><strong>{value}</strong><p>{label}</p></div></div>; }
