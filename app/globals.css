@@ -54,6 +54,10 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
 .community-cta:active { transform: translate(7px, 7px); box-shadow: 3px 3px 0 #3d286f; }
 .home-motto { display: flex; align-items: center; gap: 10px; margin: 82px 0 0; color: #7effb5; font-family: "Amazon Ember Mono", Consolas, "Courier New", monospace; font-size: clamp(20px, 2.3vw, 34px); letter-spacing: .06em; }
 .home-motto img { width: 1em; height: 1em; object-fit: contain; image-rendering: pixelated; }
+
+@media (min-width: 901px) {
+  .home-hero h1 { padding: 0 .12em .14em; margin: 0 -.12em -.14em; }
+}
 .hero { padding-top: 52px; max-width: 680px; }
 .eyebrow { margin: 0 0 14px; text-transform: uppercase; color: #8f7aff; font-weight: 700; letter-spacing: .035em; font-size: 15px; }
 .eyebrow span { margin-right: 7px; color: #8d4ff5; }
