@@ -1,26 +1,23 @@
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
-import { OnboardingFlow } from "@/components/onboarding-flow";
-import { createAdminClient } from "@/lib/supabase/admin";
 import { AboutGroup } from "@/components/about-group";
 import { ContactSection } from "@/components/contact-section";
 
-export const dynamic = "force-dynamic";
-
-export default async function Home() {
-  const { data } = await createAdminClient().from("candidates").select("id,name").eq("active", true).order("name");
+export default function Home() {
   return (
-    <div className="site-shell">
-      <Header />
-      <main className="page-width">
-        <section className="hero" aria-labelledby="page-title">
-          <p className="eyebrow"><span aria-hidden="true">▣</span> Onboarding individual</p>
-          <h1 id="page-title">Agende seu <span>onboarding</span></h1>
-          <p>Esta é uma etapa obrigatória do processo seletivo para o Core Team 2026/2027.</p>
+    <div className="site-shell home-shell">
+      <Header home />
+      <main>
+        <section className="home-hero" aria-labelledby="home-title">
+          <div className="page-width home-hero-inner">
+            <p className="home-kicker">AWS STUDENT BUILDER GROUP • UVV</p>
+            <h1 id="home-title">Seja bem-<span>vindo</span></h1>
+            <p className="home-subtitle">Faça parte da nossa comunidade no Campus UVV</p>
+            <a className="community-cta" href="#sobre">Entrar na comunidade</a>
+            <p className="home-motto">Learn. Build. Connect. <span aria-hidden="true">♜</span></p>
+          </div>
         </section>
-        <OnboardingFlow candidates={data ?? []} />
-        <AboutGroup />
-        <ContactSection />
+        <div className="page-width"><AboutGroup /><ContactSection /></div>
       </main>
       <Footer />
     </div>

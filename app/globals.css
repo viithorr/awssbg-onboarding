@@ -41,6 +41,18 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
 .header nav a.active { color: #fff; font-weight: 700; }
 .header nav a.active::after { content: ""; position: absolute; height: 2px; inset: auto 0 0; background: linear-gradient(90deg, #ab45fa, #57d6ff); }
 .menu-button { display: none; color: #fff; background: transparent; border: 0; width: 44px; height: 44px; place-items: center; }
+.home-hero { min-height: calc(100vh - 78px); display: grid; place-items: center; position: relative; isolation: isolate; overflow: hidden; border-bottom: 1px solid rgba(139, 163, 188, .14); }
+.home-hero::before { content: ""; position: absolute; z-index: -2; inset: 0; background: radial-gradient(circle at 18% 40%, rgba(54, 74, 203, .22), transparent 28%), radial-gradient(circle at 78% 57%, rgba(31, 173, 192, .12), transparent 26%), linear-gradient(rgba(89, 122, 151, .1) 1px, transparent 1px), linear-gradient(90deg, rgba(89, 122, 151, .1) 1px, transparent 1px); background-size: auto, auto, 74px 74px, 74px 74px; }
+.home-hero::after { content: ""; position: absolute; z-index: -1; width: min(78vw, 1180px); height: 58%; border: 2px solid rgba(99, 140, 171, .08); background: rgba(4, 17, 28, .38); box-shadow: 32px 32px 0 rgba(15, 44, 66, .12), -28px -28px 0 rgba(68, 43, 145, .06); transform: skewX(-4deg); }
+.home-hero-inner { display: flex; flex-direction: column; align-items: center; padding: 70px 0 62px; text-align: center; }
+.home-kicker { margin: 0 0 22px; color: #9ba9bb; font-size: 12px; font-weight: 700; letter-spacing: .16em; }
+.home-hero h1 { margin: 0; font-size: clamp(66px, 8vw, 126px); line-height: .94; letter-spacing: -.055em; color: transparent; background: linear-gradient(90deg, #82e8f1, #8af0ad 52%, #efff19); background-clip: text; -webkit-background-clip: text; }
+.home-subtitle { margin: 24px 0 0; color: #f3f5f9; font-size: clamp(22px, 2.5vw, 39px); letter-spacing: -.025em; }
+.community-cta { min-width: min(440px, 90vw); margin-top: 72px; padding: 24px 34px; color: #fff; border: 2px solid #66a8ff; border-radius: 2px; background: #1760ca; box-shadow: 10px 10px 0 #3d286f; text-decoration: none; text-transform: uppercase; font-size: clamp(20px, 2vw, 30px); font-weight: 700; transition: transform .08s linear, box-shadow .08s linear; }
+.community-cta:hover { transform: translate(-2px, -2px); box-shadow: 12px 12px 0 #3d286f; }
+.community-cta:active { transform: translate(7px, 7px); box-shadow: 3px 3px 0 #3d286f; }
+.home-motto { margin: 82px 0 0; color: #62f4b0; font-family: Consolas, "Courier New", monospace; font-size: clamp(20px, 2.3vw, 34px); letter-spacing: .06em; }
+.home-motto span { color: #18e79b; }
 .hero { padding-top: 52px; max-width: 680px; }
 .eyebrow { margin: 0 0 14px; text-transform: uppercase; color: #8f7aff; font-weight: 700; letter-spacing: .035em; font-size: 15px; }
 .eyebrow span { margin-right: 7px; color: #8d4ff5; }
@@ -144,6 +156,11 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
 @media (max-width: 900px) {
   .page-width { width: min(100% - 32px, 650px); }
   .header { height: 72px; }
+  .home-hero { min-height: calc(100svh - 72px); }
+  .home-hero::after { width: 88vw; height: 62%; }
+  .home-hero-inner { padding-block: 58px; }
+  .community-cta { margin-top: 56px; }
+  .home-motto { margin-top: 66px; }
   .header nav { display: none; }
   .header nav.open { position: absolute; display: grid; height: auto; top: calc(100% + 8px); left: 16px; right: 16px; gap: 0; padding: 7px; border: 2px solid #b88cff; border-radius: 3px; background: #0d1c29; box-shadow: 6px 6px 0 #28184d; }
   .header nav.open a { min-height: 48px; padding: 0 13px; border-bottom: 1px solid #2d3e50; }
@@ -162,6 +179,14 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
 @media (max-width: 520px) {
   .site-shell { background-size: 36px 36px; }
   .page-width { width: calc(100% - 28px); }
+  .home-hero::before { background-size: auto, auto, 42px 42px, 42px 42px; }
+  .home-hero::after { width: 94vw; height: 69%; transform: skewX(-2deg); }
+  .home-hero-inner { justify-content: center; min-height: calc(100svh - 72px); padding: 48px 0 42px; }
+  .home-kicker { max-width: 260px; margin-bottom: 18px; font-size: 10px; line-height: 1.5; }
+  .home-hero h1 { max-width: 350px; font-size: clamp(56px, 18vw, 78px); }
+  .home-subtitle { max-width: 330px; margin-top: 20px; font-size: 21px; line-height: 1.25; }
+  .community-cta { min-width: 0; width: min(100%, 330px); margin-top: 48px; padding: 19px 18px; font-size: 20px; box-shadow: 7px 7px 0 #3d286f; }
+  .home-motto { margin-top: 58px; font-size: clamp(17px, 5vw, 21px); }
   .header .brand-logo { width: 92px; }
   .header .brand-name { max-width: 92px; }
   .hero { padding-top: 32px; }
