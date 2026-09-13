@@ -18,7 +18,7 @@ export default async function SchedulingPage() {
         </section>
         <OnboardingFlow candidates={data ?? []} />
       </main>
-      <Footer />
+      <Footer scheduling />
     </div>
   );
 }
