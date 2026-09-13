@@ -14,7 +14,7 @@ export default function Home() {
             <h1 id="home-title">Seja bem-<span>vindo</span></h1>
             <p className="home-subtitle">Faça parte da nossa comunidade no Campus UVV</p>
             <a className="community-cta" href="#sobre">Entrar na comunidade</a>
-            <p className="home-motto">Learn. Build. Connect. <span aria-hidden="true">♜</span></p>
+            <p className="home-motto">Learn. Build. Connect. <img src="/trofeu-icon.svg" alt="" aria-hidden="true" /></p>
           </div>
         </section>
         <div className="page-width"><AboutGroup /><ContactSection /></div>
